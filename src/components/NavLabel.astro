@@ -1,0 +1,15 @@
+---
+import type { NavItem } from '../config/site';
+
+interface Props {
+  item: NavItem;
+  active: boolean;
+}
+
+// ターミナル風に、現在地は "> "、それ以外は2スペースで桁を揃える
+const { item, active } = Astro.props;
+---
+
+{active ? '> ' : '  '}
+{item.label}
+{item.external ? ' ↗' : ''}

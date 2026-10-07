@@ -1,0 +1,179 @@
+/* 記事本文。MDX から生成される要素はスコープ外なのでグローバルに書く */
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  font-size: 16.5px;
+  line-height: 1.95;
+  color: var(--c-text-body);
+}
+
+.prose > * {
+  margin: 0;
+}
+
+.prose h2,
+.prose h3 {
+  line-height: 1.5;
+  font-weight: 700;
+  color: var(--c-text);
+  scroll-margin-top: 24px;
+}
+
+.prose h2 {
+  margin-top: 16px;
+  font-size: 22px;
+}
+
+.prose h2::before {
+  content: '## ';
+  font-family: var(--font-mono);
+  color: var(--c-accent);
+}
+
+.prose h3 {
+  margin-top: 8px;
+  font-size: 18px;
+}
+
+.prose h3::before {
+  content: '### ';
+  font-family: var(--font-mono);
+  color: var(--c-text-muted);
+}
+
+.prose a {
+  color: var(--c-text);
+  text-decoration-color: var(--c-border-hover);
+  text-underline-offset: 3px;
+}
+
+.prose a:hover {
+  color: var(--c-text-hover);
+  text-decoration-color: var(--c-accent);
+}
+
+.prose strong {
+  color: var(--c-text);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5em;
+}
+
+.prose li + li {
+  margin-top: 4px;
+}
+
+.prose li::marker {
+  color: var(--c-text-muted);
+}
+
+.prose blockquote {
+  padding-left: 18px;
+  border-left: 2px solid var(--c-border);
+  color: var(--c-text-muted);
+}
+
+.prose hr {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--c-border);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.prose th,
+.prose td {
+  padding: 8px 12px;
+  border: 1px solid var(--c-border);
+  text-align: left;
+}
+
+.prose th {
+  background: var(--c-surface);
+  color: var(--c-text);
+}
+
+.prose img {
+  height: auto;
+}
+
+/* インラインコード */
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 2px 6px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  color: var(--c-text);
+}
+
+/* コードブロック(src/plugins/code-frame.ts が生成) */
+.code-frame {
+  border: 1px solid var(--c-border);
+  background: var(--c-code-bg);
+}
+
+.code-frame__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 4px 4px 16px;
+  border-bottom: 1px solid var(--c-border);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--c-text-muted);
+}
+
+.code-frame__copy {
+  padding: 12px 14px;
+  background: transparent;
+  border: none;
+  color: var(--c-text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.code-frame__copy:hover {
+  color: var(--c-text);
+}
+
+.code-frame__copy[data-copied] {
+  color: var(--c-accent);
+}
+
+.code-frame pre {
+  margin: 0;
+  padding: 20px 16px;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+
+.code-frame pre code {
+  font-family: inherit;
+}
+
+@media (max-width: 760px) {
+  .prose {
+    font-size: 16px;
+    gap: 24px;
+  }
+
+  .prose h2 {
+    font-size: 20px;
+  }
+
+  .code-frame pre {
+    font-size: 13px;
+  }
+}

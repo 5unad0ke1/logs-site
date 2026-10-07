@@ -1,0 +1,61 @@
+---
+import { nav } from '../config/site';
+import Logo from './Logo.astro';
+import NavLabel from './NavLabel.astro';
+
+interface Props {
+  current?: string;
+}
+
+const { current } = Astro.props;
+---
+
+<aside class="side">
+  <Logo href="/" />
+  <nav aria-label="メイン">
+    {nav.map((item) => {
+      const active = item.key === current;
+      return (
+        <a
+          class:list={['navlink', { active }]}
+          href={item.href}
+          aria-current={active ? 'page' : undefined}
+          target={item.external ? '_blank' : undefined}
+          rel={item.external ? 'noopener' : undefined}
+        >
+          <NavLabel item={item} active={active} />
+        </a>
+      );
+    })}
+  </nav>
+</aside>
+
+<style>
+  .side {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 48px 0 24px;
+  }
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    white-space: pre;
+  }
+  .navlink {
+    padding: 12px;
+    text-decoration: none;
+    color: var(--c-text-muted);
+  }
+  .navlink:hover {
+    background: var(--c-surface);
+    color: var(--c-text);
+  }
+  .navlink.active {
+    color: var(--c-accent);
+    background: var(--c-surface);
+  }
+</style>

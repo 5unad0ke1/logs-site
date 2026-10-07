@@ -1,0 +1,194 @@
+---
+import type { MarkdownHeading } from 'astro';
+import { getImage } from 'astro:assets';
+import '../styles/prose.css';
+
+import BaseLayout from './BaseLayout.astro';
+import HourglassIcon from '../components/HourglassIcon.astro';
+import PrevNext from '../components/PrevNext.astro';
+import Toc from '../components/Toc.astro';
+import { excerpt } from '../lib/excerpt';
+import { formatDate } from '../lib/format';
+import type { Post } from '../lib/posts';
+
+interface Props {
+  post: Post;
+  headings: MarkdownHeading[];
+  minutes?: number;
+  prev?: Post;
+  next?: Post;
+}
+
+const { post, headings, minutes, prev, next } = Astro.props;
+const { title, date, updated, tags, description, cover } = post.data;
+const ogImage = cover
+  ? (await getImage({ src: cover, width: 1200, format: 'png' })).src
+  : undefined;
+---
+
+<BaseLayout
+  title={title}
+  description={description ?? excerpt(post.body)}
+  image={ogImage}
+  type="article"
+  publishedTime={date}
+  modifiedTime={updated}
+  width="article"
+>
+  <div class="post">
+    <article class="article">
+      <header class="head">
+        <a class="crumb" href="/">
+          ~/log/{post.id}
+        </a>
+        <p class="dates">
+          <time datetime={date.toISOString()}>{formatDate(date)}</time>
+          {updated && (
+            <span class="updated">
+              (updated{' '}
+              <time datetime={updated.toISOString()}>
+                {formatDate(updated)}
+              </time>
+              )
+            </span>
+          )}
+        </p>
+        <h1>{title}</h1>
+        <div class="meta">
+          {minutes && (
+            <span class="minutes">
+              <HourglassIcon size={14} color="currentColor" />
+              {minutes} min
+            </span>
+          )}
+          {tags.length > 0 && <span>{tags.map((t) => `#${t}`).join(' ')}</span>}
+        </div>
+      </header>
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      <PrevNext prev={prev} next={next} />
+    </article>
+
+    <div class="toc-col">
+      <Toc headings={headings} />
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  // コードブロックの copy ボタン
+  document.addEventListener('click', async (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>(
+      '[data-copy]',
+    );
+    if (!button) return;
+    const code = button.closest('.code-frame')?.querySelector('pre code');
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code.textContent ?? '');
+      button.textContent = 'copied';
+      button.dataset.copied = '';
+    } catch {
+      button.textContent = 'failed';
+    }
+    setTimeout(() => {
+      button.textContent = 'copy';
+      delete button.dataset.copied;
+    }, 1600);
+  });
+</script>
+
+<style>
+  .post {
+    display: grid;
+    grid-template-columns: minmax(0, 720px) minmax(200px, 1fr);
+    align-items: start;
+    gap: 56px;
+    padding: 48px 0 80px;
+  }
+  .article {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .toc-col {
+    position: sticky;
+    top: 0;
+  }
+  .head {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .crumb {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--c-text-muted);
+    text-decoration: none;
+  }
+  .crumb:hover {
+    color: var(--c-text);
+  }
+  .dates {
+    margin: 8px 0 0;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--c-text-muted);
+  }
+  .updated {
+    margin-left: 8px;
+    font-size: 12px;
+  }
+  h1 {
+    margin: -8px 0 0;
+    font-size: 34px;
+    line-height: 1.5;
+    font-weight: 700;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 20px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--c-text-muted);
+  }
+  .minutes {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  @media (max-width: 1100px) {
+    .post {
+      grid-template-columns: minmax(0, 720px);
+    }
+    .toc-col {
+      display: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .post {
+      padding: 32px 0 56px;
+    }
+    .article {
+      gap: 24px;
+    }
+    .head {
+      gap: 12px;
+      padding-bottom: 24px;
+    }
+    h1 {
+      margin-top: -4px;
+      font-size: 26px;
+    }
+  }
+</style>

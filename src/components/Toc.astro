@@ -1,0 +1,108 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const items = Astro.props.headings.filter(
+  (h) => h.depth === 2 || h.depth === 3,
+);
+---
+
+{items.length > 0 && (
+  <aside class="toc" aria-label="目次">
+    <span class="label">contents</span>
+    <nav>
+      {items.map((heading) => (
+        <a
+          class:list={['item', { sub: heading.depth === 3 }]}
+          href={`#${heading.slug}`}
+          data-toc={heading.slug}
+        >
+          {heading.text}
+        </a>
+      ))}
+    </nav>
+  </aside>
+)}
+
+<script>
+  // 画面上部に最後に入った見出しを「現在地」として強調する
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')];
+  const headings = links
+    .map((link) => document.getElementById(link.dataset.toc ?? ''))
+    .filter((el): el is HTMLElement => el !== null);
+
+  const setActive = (id: string) => {
+    for (const link of links) {
+      const active = link.dataset.toc === id;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    }
+  };
+
+  const update = () => {
+    let current = headings[0];
+    for (const heading of headings) {
+      if (heading.getBoundingClientRect().top <= 120) current = heading;
+    }
+    if (current) setActive(current.id);
+  };
+
+  if (headings.length > 0) {
+    let ticking = false;
+    addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          update();
+          ticking = false;
+        });
+      },
+      { passive: true },
+    );
+    update();
+  }
+</script>
+
+<style>
+  .toc {
+    position: sticky;
+    top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .label {
+    padding-bottom: 12px;
+    color: var(--c-text-muted);
+  }
+  nav {
+    display: flex;
+    flex-direction: column;
+  }
+  .item {
+    padding: 10px 0 10px 12px;
+    border-left: 1px solid var(--c-border);
+    text-decoration: none;
+    color: var(--c-text-muted);
+    line-height: 1.5;
+  }
+  .item.sub {
+    padding-left: 24px;
+  }
+  .item:hover {
+    color: var(--c-text);
+  }
+  .item.active {
+    border-left-color: var(--c-accent);
+    color: var(--c-accent);
+  }
+</style>

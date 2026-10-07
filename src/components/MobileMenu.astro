@@ -1,0 +1,165 @@
+---
+import { nav, site } from '../config/site';
+import Logo from './Logo.astro';
+import NavLabel from './NavLabel.astro';
+
+interface Props {
+  current?: string;
+}
+
+const { current } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<dialog id="mobile-menu" class="menu" aria-label="メニュー">
+  <div class="head">
+    <Logo size="sm" />
+    <button
+      type="button"
+      class="close"
+      aria-label="メニューを閉じる"
+      data-menu-close
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M6 6l12 12"></path>
+        <path d="M18 6L6 18"></path>
+      </svg>
+    </button>
+  </div>
+  <nav aria-label="メイン">
+    {nav.map((item) => {
+      const active = item.key === current;
+      return (
+        <a
+          class:list={{ active }}
+          href={item.href}
+          aria-current={active ? 'page' : undefined}
+          target={item.external ? '_blank' : undefined}
+          rel={item.external ? 'noopener' : undefined}
+        >
+          <NavLabel item={item} active={active} />
+        </a>
+      );
+    })}
+  </nav>
+  <div class="foot">
+    <a href={site.social.github} target="_blank" rel="noopener">
+      github
+    </a>
+    <a href={site.social.x} target="_blank" rel="noopener">
+      x
+    </a>
+    <span>
+      © {year} {site.copyright}
+    </span>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('#mobile-menu');
+  const openButton =
+    document.querySelector<HTMLButtonElement>('[data-menu-open]');
+
+  if (dialog && openButton) {
+    openButton.addEventListener('click', () => {
+      dialog.showModal();
+      openButton.setAttribute('aria-expanded', 'true');
+    });
+    dialog.addEventListener('close', () => {
+      openButton.setAttribute('aria-expanded', 'false');
+    });
+    dialog.addEventListener('click', (event) => {
+      const target = event.target as Element;
+      if (target.closest('[data-menu-close], a')) dialog.close();
+    });
+    // PC 幅に戻ったらメニューは不要なので閉じる
+    matchMedia('(min-width: 761px)').addEventListener('change', (event) => {
+      if (event.matches && dialog.open) dialog.close();
+    });
+  }
+</script>
+
+<style>
+  .menu {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 12px var(--gutter) 32px;
+    border: 0;
+    background: var(--c-bg);
+    color: var(--c-text);
+    overflow-y: auto;
+  }
+  .menu[open] {
+    display: flex;
+    flex-direction: column;
+  }
+  .menu::backdrop {
+    background: var(--c-bg);
+  }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .close {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--c-border);
+    color: var(--c-text);
+    cursor: pointer;
+  }
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 40px;
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 500;
+    white-space: pre;
+  }
+  nav a {
+    padding: 14px 0;
+    text-decoration: none;
+    color: var(--c-text);
+  }
+  nav a.active {
+    color: var(--c-accent);
+  }
+  .foot {
+    margin-top: auto;
+    padding-top: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 20px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--c-text-muted);
+  }
+  .foot a {
+    padding: 12px 0;
+    color: var(--c-text-muted);
+  }
+</style>

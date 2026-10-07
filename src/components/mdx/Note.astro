@@ -1,0 +1,41 @@
+---
+interface Props {
+  label?: string;
+}
+
+const { label = 'note' } = Astro.props;
+---
+
+<aside class="note" role="note">
+  <span class="label">&gt; {label}</span>
+  <div class="body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .note {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 20px;
+    border: 1px solid var(--c-border);
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--c-accent);
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--c-text-body);
+  }
+  .body :global(p) {
+    margin: 0;
+  }
+</style>

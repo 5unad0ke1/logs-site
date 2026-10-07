@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404">
+  <section class="notfound">
+    <p class="code">&gt; 404 not found</p>
+    <h1>ページが見つかりません</h1>
+    <p class="text">移動したか、削除された可能性があります。</p>
+    <a class="back" href="/">
+      ~/log に戻る
+    </a>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 48px 0 80px;
+  }
+  .code {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--c-accent);
+  }
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.5;
+  }
+  .text {
+    margin: 0;
+    line-height: 1.8;
+    color: var(--c-text-body);
+  }
+  .back {
+    margin-top: 16px;
+    padding: 10px 14px;
+    border: 1px solid var(--c-border);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .back:hover {
+    border-color: var(--c-border-hover);
+  }
+</style>

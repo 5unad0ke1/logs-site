@@ -1,0 +1,30 @@
+---
+import { render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import Figure from '../../components/mdx/Figure.astro';
+import LinkCard from '../../components/mdx/LinkCard.astro';
+import Note from '../../components/mdx/Note.astro';
+import Video from '../../components/mdx/Video.astro';
+import { getAdjacent, getPosts } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post, ...getAdjacent(posts, post.id) },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content, headings, remarkPluginFrontmatter } = await render(post);
+---
+
+<PostLayout
+  post={post}
+  headings={headings}
+  minutes={remarkPluginFrontmatter.minutes}
+  prev={prev}
+  next={next}
+>
+  <Content components={{ Figure, LinkCard, Note, Video }} />
+</PostLayout>

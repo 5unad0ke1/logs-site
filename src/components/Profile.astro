@@ -1,0 +1,90 @@
+---
+import { site } from '../config/site';
+
+const chips = [
+  { label: 'X', href: site.social.x },
+  { label: 'GitHub', href: site.social.github },
+  { label: 'Links ↗', href: site.social.links },
+];
+---
+
+<section class="profile">
+  <h1>{site.author}</h1>
+  <p class="alias">a.k.a. {site.alias}</p>
+  <p class="bio">{site.bio}</p>
+  <div class="chips">
+    {chips.map((chip) => (
+      <a class="chip" href={chip.href} target="_blank" rel="noopener">
+        {chip.label}
+      </a>
+    ))}
+  </div>
+</section>
+
+<style>
+  .profile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 48px 0 40px;
+  }
+  h1 {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 40px;
+    line-height: 1.3;
+    font-weight: 700;
+  }
+  .alias {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--c-text-muted);
+  }
+  .bio {
+    margin: 0;
+    line-height: 1.8;
+    color: var(--c-text-body);
+    white-space: pre-line;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .chip {
+    padding: 10px 14px;
+    border: 1px solid var(--c-border);
+    text-decoration: none;
+    color: var(--c-text);
+  }
+  .chip:hover {
+    border-color: var(--c-border-hover);
+  }
+
+  @media (max-width: 760px) {
+    .profile {
+      gap: 8px;
+      padding: 36px 0 28px;
+    }
+    h1 {
+      font-size: 32px;
+    }
+    .alias {
+      font-size: 13px;
+    }
+    .bio {
+      margin-top: 10px;
+      font-size: 15px;
+    }
+    .chips {
+      margin-top: 10px;
+    }
+    .chip {
+      padding: 10px 12px;
+    }
+  }
+</style>
