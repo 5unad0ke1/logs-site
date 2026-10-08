@@ -1,5 +1,12 @@
 ## Development
 
+Articles live in a separate repository (5unad0ke1/logs-content) cloned into `content/`.
+`npm run dev` / `build` / `check` fetch it automatically; `astro` commands do not, so fetch it first:
+
+```
+npm run content:fetch
+```
+
 When starting the dev server, use background mode:
 
 ```

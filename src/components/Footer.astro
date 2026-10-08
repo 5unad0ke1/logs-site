@@ -1,13 +1,9 @@
 ---
-import { site } from '../config/site';
-
-const year = new Date().getFullYear();
+import { copyrightText } from '../config/site';
 ---
 
 <footer class="footer">
-  <span>
-    © {year} {site.copyright}
-  </span>
+  <span>{copyrightText}</span>
 </footer>
 
 <style>

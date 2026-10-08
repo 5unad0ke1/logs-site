@@ -1,4 +1,5 @@
 ---
+import { site } from '../config/site';
 import HourglassIcon from './HourglassIcon.astro';
 
 interface Props {
@@ -13,7 +14,8 @@ const Tag = href ? 'a' : 'span';
 <Tag class:list={['logo', size]} href={href}>
   <HourglassIcon size={size === 'md' ? 22 : 20} />
   <span>
-    砂時計<span class="accent">/log</span>
+    {site.author}
+    <span class="accent">{site.titleSuffix}</span>
   </span>
 </Tag>
 

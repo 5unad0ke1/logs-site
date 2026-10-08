@@ -1,5 +1,5 @@
 ---
-import { nav, site } from '../config/site';
+import { copyrightText, isCurrentPage, nav } from '../config/site';
 import Logo from './Logo.astro';
 import NavLabel from './NavLabel.astro';
 
@@ -8,7 +8,6 @@ interface Props {
 }
 
 const { current } = Astro.props;
-const year = new Date().getFullYear();
 ---
 
 <dialog id="mobile-menu" class="menu" aria-label="メニュー">
@@ -42,7 +41,9 @@ const year = new Date().getFullYear();
         <a
           class:list={{ active }}
           href={item.href}
-          aria-current={active ? 'page' : undefined}
+          aria-current={
+            isCurrentPage(item.href, Astro.url.pathname) ? 'page' : undefined
+          }
           target={item.external ? '_blank' : undefined}
           rel={item.external ? 'noopener' : undefined}
         >
@@ -52,9 +53,7 @@ const year = new Date().getFullYear();
     })}
   </nav>
   <div class="foot">
-    <span>
-      © {year} {site.copyright}
-    </span>
+    <span>{copyrightText}</span>
   </div>
 </dialog>
 

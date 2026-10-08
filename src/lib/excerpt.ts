@@ -2,7 +2,9 @@
 export function excerpt(body: string | undefined, length = 120): string {
   if (!body) return '';
   const text = body
-    .replace(/^(import|export)\s.*$/gm, '')
+    // MDX の import / export(複数行にまたがるものも含め、文の終わりまで)
+    .replace(/^import\s[\s\S]*?['"][^'"\n]*['"];?[ \t]*$/gm, '')
+    .replace(/^export\s[\s\S]*?(?:;[ \t]*$|(?=\n\s*\n))/gm, '')
     .replace(/```[\s\S]*?```/g, '')
     .replace(/<[^>]+>/g, '')
     .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')

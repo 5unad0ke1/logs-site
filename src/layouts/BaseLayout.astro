@@ -83,7 +83,7 @@ const current = currentNavKey(Astro.url.pathname);
       name="twitter:card"
       content={imageUrl ? 'summary_large_image' : 'summary'}
     />
-    <meta name="twitter:site" content="@5unad0ke1" />
+    <meta name="twitter:site" content={site.social.xHandle} />
   </head>
   <body>
     <div class="shell">

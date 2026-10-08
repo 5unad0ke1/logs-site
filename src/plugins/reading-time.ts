@@ -20,7 +20,8 @@ export function readingTime() {
     return defineMdastPlugin({
       name: 'reading-time',
       text(node) {
-        text += node.value;
+        // ノードをまたいで単語がつながらないよう区切る(和文の字数には影響しない)
+        text += ` ${node.value}`;
       },
       inlineCode(node) {
         text += ` ${node.value} `;

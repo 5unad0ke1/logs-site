@@ -13,7 +13,15 @@ export function figureNumber() {
       ctx: MdastVisitorContext,
     ) => {
       if (!node.name || !NUMBERED.has(node.name)) return;
-      if (node.attributes.some((a) => 'name' in a && a.name === 'num')) return;
+      const explicit = node.attributes.find(
+        (a) => 'name' in a && a.name === 'num',
+      );
+      if (explicit) {
+        // 手で num を付けた図以降は、その番号の続きから振る
+        const n = Number(explicit.value);
+        if (Number.isFinite(n)) count = Math.max(count, n);
+        return;
+      }
       count += 1;
       // Sätteri は JSX ノードの attributes を setProperty で書き換えられないので、
       // 属性を足したノードで丸ごと差し替える

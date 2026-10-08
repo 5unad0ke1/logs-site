@@ -153,6 +153,8 @@
 
 .code-frame pre {
   margin: 0;
+  /* Shiki もインラインで付けるが、設定次第で外れるので明示する */
+  overflow-x: auto;
   padding: 20px 16px;
   font-family: var(--font-mono);
   font-size: 13.5px;

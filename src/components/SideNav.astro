@@ -1,5 +1,5 @@
 ---
-import { nav } from '../config/site';
+import { isCurrentPage, nav } from '../config/site';
 import Logo from './Logo.astro';
 import NavLabel from './NavLabel.astro';
 
@@ -19,7 +19,9 @@ const { current } = Astro.props;
         <a
           class:list={['navlink', { active }]}
           href={item.href}
-          aria-current={active ? 'page' : undefined}
+          aria-current={
+            isCurrentPage(item.href, Astro.url.pathname) ? 'page' : undefined
+          }
           target={item.external ? '_blank' : undefined}
           rel={item.external ? 'noopener' : undefined}
         >
