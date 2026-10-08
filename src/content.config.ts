@@ -23,7 +23,7 @@ const posts = defineCollection({
       cover: image().optional(),
       draft: z.boolean().default(false),
       /** Zenn など外部に置いた記事の URL。指定すると一覧からそこへ飛ばし、サイト内のページは作らない */
-      externalUrl: z.url().optional(),
+      externalUrl: z.url({ protocol: /^https?$/ }).optional(),
     }),
 });
 

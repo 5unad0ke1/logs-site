@@ -44,5 +44,6 @@ export function postUrl(post: Post): string {
 export function sourceLabel(post: Post): string {
   if (!post.data.externalUrl) return 'log';
   const host = new URL(post.data.externalUrl).hostname.replace(/^www\./, '');
-  return host.split('.')[0] ?? host;
+  // externalUrl は http(s) に限定しているが、念のため空にはしない
+  return host.split('.')[0] || 'link';
 }
