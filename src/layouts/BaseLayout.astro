@@ -23,8 +23,6 @@ interface Props {
   type?: 'website' | 'article';
   publishedTime?: Date;
   modifiedTime?: Date;
-  /** 'article' は目次の分だけ本文カラムを広く取る */
-  width?: 'home' | 'article';
 }
 
 const {
@@ -34,7 +32,6 @@ const {
   type = 'website',
   publishedTime,
   modifiedTime,
-  width = 'home',
 } = Astro.props;
 
 const fullTitle = title ? `${title} | ${site.title}` : site.title;
@@ -89,12 +86,15 @@ const current = currentNavKey(Astro.url.pathname);
     <meta name="twitter:site" content="@5unad0ke1" />
   </head>
   <body>
-    <div class:list={['shell', width]}>
+    <div class="shell">
       <div class="mobile-only">
         <MobileBar />
       </div>
       <div class="desktop-only">
-        <SideNav current={current} />
+        <SideNav current={current}>
+          <!-- 記事ページの目次など、ナビの下に置くもの -->
+          <slot name="sidebar" />
+        </SideNav>
       </div>
       <main>
         <slot />
@@ -107,35 +107,42 @@ const current = currentNavKey(Astro.url.pathname);
 
 <style>
   .shell {
+    /* ページが短くてもフッターが画面下端に来るよう、高さいっぱいに伸ばす */
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-width: 1120px;
     margin: 0 auto;
     padding: 0 var(--gutter);
     display: grid;
-    align-items: start;
-    column-gap: 64px;
-  }
-  .shell.home {
-    max-width: 1120px;
     grid-template-columns: minmax(180px, 1fr) minmax(0, 820px);
-  }
-  .shell.article {
-    max-width: 1320px;
-    grid-template-columns: 180px minmax(0, 1fr);
+    column-gap: 64px;
   }
   .desktop-only {
     position: sticky;
     top: 0;
+    align-self: start;
+    /* 目次が長くなってもサイドバー内でスクロールできるように */
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow-y: auto;
+    scrollbar-width: thin;
   }
   .mobile-only {
     display: none;
   }
   main {
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  main > :global(footer) {
+    margin-top: auto;
   }
 
   @media (max-width: 760px) {
-    .shell.home,
-    .shell.article {
+    .shell {
       grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
     }
     .desktop-only {
       display: none;

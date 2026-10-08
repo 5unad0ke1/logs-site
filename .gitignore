@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # vercel
 .vercel/
+
+# 記事データ(別リポジトリ 5unad0ke1/logs-content を clone して置く)
+content/

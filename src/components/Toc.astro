@@ -48,6 +48,10 @@ const items = Astro.props.headings.filter(
     for (const heading of headings) {
       if (heading.getBoundingClientRect().top <= 120) current = heading;
     }
+    // 最後まで読んだら、短い末尾セクションでも現在地にする
+    const atBottom =
+      innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
+    if (atBottom) current = headings[headings.length - 1];
     if (current) setActive(current.id);
   };
 
@@ -71,17 +75,15 @@ const items = Astro.props.headings.filter(
 
 <style>
   .toc {
-    position: sticky;
-    top: 48px;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding-top: 8px;
+    padding-left: 12px;
     font-family: var(--font-mono);
     font-size: 13px;
   }
   .label {
-    padding-bottom: 12px;
+    padding-bottom: 8px;
     color: var(--c-text-muted);
   }
   nav {
@@ -89,7 +91,7 @@ const items = Astro.props.headings.filter(
     flex-direction: column;
   }
   .item {
-    padding: 10px 0 10px 12px;
+    padding: 8px 0 8px 12px;
     border-left: 1px solid var(--c-border);
     text-decoration: none;
     color: var(--c-text-muted);

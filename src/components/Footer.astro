@@ -8,41 +8,14 @@ const year = new Date().getFullYear();
   <span>
     © {year} {site.copyright}
   </span>
-  <span class="links">
-    <a href={site.social.links} target="_blank" rel="noopener">
-      links ↗
-    </a>
-    <a href={site.social.github} target="_blank" rel="noopener">
-      github
-    </a>
-    <a href={site.social.x} target="_blank" rel="noopener">
-      x
-    </a>
-    <a href="/rss.xml">rss</a>
-  </span>
 </footer>
 
 <style>
   .footer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 16px;
     padding: 32px 0 48px;
     border-top: 1px solid var(--c-border);
     font-family: var(--font-mono);
     font-size: 13px;
     color: var(--c-text-muted);
-  }
-  .links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-  a {
-    color: var(--c-text-muted);
-  }
-  a:hover {
-    color: var(--c-text);
   }
 </style>

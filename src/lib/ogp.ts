@@ -9,10 +9,10 @@ export interface Ogp {
 }
 
 /**
- * 取得した OGP はリポジトリに保存しておき、以降のビルドではネットワークに出ない。
- * 内容を取り直したいときは該当 URL の行を消す。
+ * 取得した OGP は記事リポジトリ(content/)に保存してコミットしておき、
+ * 以降のビルドではネットワークに出ない。取り直したいときは該当 URL の行を消す。
  */
-const CACHE_FILE = path.join(process.cwd(), '.cache', 'ogp.json');
+const CACHE_FILE = path.join(process.cwd(), 'content', '.cache', 'ogp.json');
 
 let cache: Promise<Record<string, Ogp>> | undefined;
 const inflight = new Map<string, Promise<Ogp>>();

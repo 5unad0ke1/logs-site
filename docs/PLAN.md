@@ -1,7 +1,7 @@
 # sunadokei/log — Astro 実装・設計計画書
 
 - 作成日: 2026-10-07(同日、確認事項の回答を反映)
-- 本番 URL: https://logs.sunadokei.dev(Vercel)
+- 本番 URL: https://logs.sunadokei.dev(GitHub Pages。2026-10-08 に Vercel から変更)
 - 元デザイン: `sunadokei blog.html`(Claude Design のバンドル。4画面を抽出して [`docs/design-ref/`](design-ref/) に配置済み)
   - [home.html](design-ref/home.html) … PC ホーム(1280px、レスポンシブ挙動とメニュー開閉ロジックも含む)
   - [article.html](design-ref/article.html) … PC 記事ページ(記事内コンポーネント一式の見本)
@@ -11,14 +11,14 @@
 
 ## 0. 決定事項
 
-| 項目       | 決定                                                                                                   |
-| ---------- | ------------------------------------------------------------------------------------------------------ |
-| ロゴ表記   | **砂時計/log** に統一(PC・スマホ・メニューすべて)                                                      |
-| works      | **初期リリースでは扱わない**。ナビ・一覧から外す(スキーマ拡張で後から戻せる形にはしておく)             |
-| about      | **自己紹介用の記事**(`/log/about/`)へ飛ばす。`/about` は `/log/about/` へリダイレクト                  |
-| Portfolio  | **没**。チップ・ナビから削除                                                                           |
-| 外部リンク | X: https://x.com/5unad0ke1 / GitHub: https://github.com/5unad0ke1 / Links: https://links.sunadokei.dev |
-| デプロイ   | **Vercel**、本番 URL https://logs.sunadokei.dev                                                        |
+| 項目       | 決定                                                                                                                                                                  |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ロゴ表記   | **砂時計/log** に統一(PC・スマホ・メニューすべて)                                                                                                                     |
+| works      | **初期リリースでは扱わない**。ナビ・一覧から外す(スキーマ拡張で後から戻せる形にはしておく)                                                                            |
+| about      | **自己紹介用の記事**(`/log/about/`)へ飛ばす。`/about` は `/log/about/` へリダイレクト                                                                                 |
+| Portfolio  | **没**。チップ・ナビから削除                                                                                                                                          |
+| 外部リンク | X: https://x.com/5unad0ke1 / GitHub: https://github.com/5unad0ke1 / Links: https://links.sunadokei.dev                                                                |
+| デプロイ   | **GitHub Pages**(`5unad0ke1/logs-site` の Actions でビルド・公開)、本番 URL https://logs.sunadokei.dev。記事データは別リポジトリに分離する(下記「9. リポジトリ分離」) |
 
 これにより、ナビは `log / about / links ↗ / rss`、プロフィールのチップは `X / GitHub / Links ↗`、フッターは `links ↗ / github / x / rss` になる。
 
@@ -30,12 +30,12 @@
 
 ダークトーン + 等幅フォントの「ターミナル風」個人ブログ。左サイドバー(ロゴ + ナビ)と本文カラムの2カラム構成で、760px 以下ではサイドバーが上部バー + 全画面メニューに切り替わる。
 
-| 画面           | 構成                                                                                                            |
-| -------------- | --------------------------------------------------------------------------------------------------------------- |
-| ホーム         | サイドバー / プロフィール(名前・a.k.a.・自己紹介・SNSチップ)/ 記事一覧 / フッター                               |
-| 記事           | サイドバー / パンくず `~/log/<slug>` / 日付 / タイトル / 読了時間・タグ / 本文 / 前後記事 / 目次(右) / フッター |
-| スマホ         | 上部バー(ロゴ + ハンバーガー)/ 縦1カラム                                                                        |
-| スマホメニュー | 全画面ダイアログ。大きな等幅ナビ + 下部に github / x / ©                                                        |
+| 画面           | 構成                                                                                                                      |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| ホーム         | サイドバー / プロフィール(名前・a.k.a.・自己紹介・SNSチップ)/ 記事一覧 / フッター                                         |
+| 記事           | サイドバー / パンくず `~/log/<slug>` / 日付 / タイトル / 読了時間・タグ / 本文 / 前後記事 / 目次(左サイドバー) / フッター |
+| スマホ         | 上部バー(ロゴ + ハンバーガー)/ 縦1カラム                                                                                  |
+| スマホメニュー | 全画面ダイアログ。大きな等幅ナビ + 下部に github / x / ©                                                                  |
 
 ### 1.2 デザイントークン(元HTMLのインライン値から抽出)
 
@@ -77,8 +77,9 @@
 **レイアウト**
 
 - ホーム: `max-width: 1120px`、左右 padding 24px、サイドバーと本文の gap 64px、本文 `max-width: 820px`
-- 記事: `max-width: 1320px`、記事カラム `max-width: 720px`、記事と目次の gap 56px
-- ブレークポイント: **760px**(サイドバー ⇔ 上部バー)、**1100px**(目次の表示/非表示)
+- 記事: ~~`max-width: 1320px`、記事カラム 720px、目次は右カラム~~ → **ホームと同じ枠(1120px / 本文 820px)に統一し、目次は左サイドバーのナビの下へ移動**(2026-10-07 変更。本文幅が狭く想定外の改行が起きやすかったため)
+- ブレークポイント: **760px**(サイドバー + 目次 ⇔ 上部バー)
+- フッターは本文カラムの幅に合わせ、ページが短いときは画面下端に置く(shell を `min-height: 100dvh`、main を flex にして `margin-top: auto`)
 - 角丸なし・影なし・1px 罫線で区切るフラットな設計
 - タップ領域は 44px 以上を確保(ボタン 44×44、ナビ padding 12–14px)
 
@@ -100,7 +101,7 @@
 6. **動画** … クリックまでサムネイルのみ表示(軽量化)、accent 色の丸い再生ボタン
 7. **ノート** … 1px 枠、`> note` ラベル(accent)、15px 本文
 8. **前後記事ナビ** … `← prev`(古い記事)/ `next →`(新しい記事)の2カード
-9. **目次** … 右カラム、`contents` 見出し、現在位置を accent の左ボーダーで表示
+9. **目次** … 左サイドバー(ナビの下)、`contents` 見出し、現在位置を accent の左ボーダーで表示
 
 ### 1.4 デザイン上の不整合・未定義(→ 8章の確認事項へ)
 
@@ -280,7 +281,7 @@ export const site = {
 
 - ヘッダ: パンくず `~/log/<slug>`(ホームへのリンク)→ `<time datetime>` → h1 → 砂時計アイコン + `N min` と `#tag #tag`
 - 本文: `prose.css` でスタイル。h2 は CSS の `::before` で `## ` を付ける(コピー時に混ざらないよう `content` で)
-- 目次: `render()` の `headings` から depth 2(必要なら 3 も字下げ)を生成。スクロール位置から現在位置をハイライト、1100px 以下で非表示
+- 目次: `render()` の `headings` から depth 2(必要なら 3 も字下げ)を生成。スクロール位置から現在位置をハイライト。左サイドバーに置くため 760px 以下(サイドバー非表示)では出ない
 - 前後記事: draft を除いた日付順で、prev = 1つ古い記事、next = 1つ新しい記事。片方しか無い場合は1枚だけ表示
 - スマホ版はデザイン未提供のため、ホームのスマホ版の余白・文字サイズの縮め方に合わせて作る
 
@@ -317,16 +318,16 @@ export const site = {
 
 各フェーズ完了時に、ブラウザで元デザイン(`docs/design-ref/`)と 1280px / 390px で見比べて確認する。
 
-| #   | フェーズ             | 内容                                                                                                                                                   | 完了条件                                                                     |
-| --- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| 0   | セットアップ         | `npm create astro@latest`(minimal, TS strict)、`site: 'https://logs.sunadokei.dev'`、MDX / sitemap / rss 追加、Fontsource 導入、`.gitignore`、Prettier | `npm run dev` / `npm run build` が通る                                       |
-| 1   | 基盤                 | `tokens.css` / `global.css`、`site.ts`、BaseLayout、SideNav、MobileBar、MobileMenu、Footer                                                             | 空ページで PC・スマホのガワがデザインと一致。メニューが開閉でき Esc で閉じる |
-| 2   | ホーム               | content.config.ts、ダミー記事4件(デザインの一覧から works を除いたもの)、Profile、PostList                                                             | home.html / mobile-home.html と見た目が一致                                  |
-| 3   | 記事ページ           | `[slug].astro`、PostLayout、prose.css、読了時間、Toc(ハイライト付き)、PrevNext                                                                         | article.html の見出し・本文・目次・前後記事が一致                            |
-| 4   | 記事内コンポーネント | コードブロック枠 + copy、Figure、LinkCard(OGP キャッシュ)、Video、Note                                                                                 | サンプル記事 `camera-shake` で全コンポーネントが表示される                   |
-| 5   | 周辺機能             | RSS、OGP/meta、sitemap、favicon、about 記事 + `/about` リダイレクト、404、draft 除外                                                                   | `/rss.xml` が妥当、各ページの meta が出る                                    |
-| 6   | 仕上げ・検証         | フォーカススタイル、Lighthouse、実機スマホ確認、リンク切れチェック                                                                                     | 6章の目標値を満たす                                                          |
-| 7   | デプロイ             | Vercel にリポジトリ連携(Astro 自動検出・静的出力なのでアダプタ不要)、`logs.sunadokei.dev` を Vercel に追加し DNS に CNAME を設定                       | https://logs.sunadokei.dev で表示され、プレビューデプロイも動く              |
+| #   | フェーズ             | 内容                                                                                                                                                                                                                                           | 完了条件                                                                            |
+| --- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| 0   | セットアップ         | `npm create astro@latest`(minimal, TS strict)、`site: 'https://logs.sunadokei.dev'`、MDX / sitemap / rss 追加、Fontsource 導入、`.gitignore`、Prettier                                                                                         | `npm run dev` / `npm run build` が通る                                              |
+| 1   | 基盤                 | `tokens.css` / `global.css`、`site.ts`、BaseLayout、SideNav、MobileBar、MobileMenu、Footer                                                                                                                                                     | 空ページで PC・スマホのガワがデザインと一致。メニューが開閉でき Esc で閉じる        |
+| 2   | ホーム               | content.config.ts、ダミー記事4件(デザインの一覧から works を除いたもの)、Profile、PostList                                                                                                                                                     | home.html / mobile-home.html と見た目が一致                                         |
+| 3   | 記事ページ           | `[slug].astro`、PostLayout、prose.css、読了時間、Toc(ハイライト付き)、PrevNext                                                                                                                                                                 | article.html の見出し・本文・目次・前後記事が一致                                   |
+| 4   | 記事内コンポーネント | コードブロック枠 + copy、Figure、LinkCard(OGP キャッシュ)、Video、Note                                                                                                                                                                         | サンプル記事 `camera-shake` で全コンポーネントが表示される                          |
+| 5   | 周辺機能             | RSS、OGP/meta、sitemap、favicon、about 記事 + `/about` リダイレクト、404、draft 除外                                                                                                                                                           | `/rss.xml` が妥当、各ページの meta が出る                                           |
+| 6   | 仕上げ・検証         | フォーカススタイル、Lighthouse、実機スマホ確認、リンク切れチェック                                                                                                                                                                             | 6章の目標値を満たす                                                                 |
+| 7   | デプロイ             | GitHub Actions(`withastro/action` + `actions/deploy-pages`)でビルド・公開。記事リポジトリを `content/` にチェックアウトしてからビルド。Pages の Custom domain に `logs.sunadokei.dev` を設定し、DNS に `logs` → `5unad0ke1.github.io` の CNAME | https://logs.sunadokei.dev で表示され、記事リポジトリへの push でも再デプロイされる |
 
 ---
 
@@ -347,4 +348,34 @@ export const site = {
 - ~~ロゴ表記~~ / ~~works~~ / ~~about~~ / ~~リンク先~~ / ~~デプロイ先~~ → 0章で決定
 - **アクセント色**: `#FF772D` 固定で進める(色替えは `site.ts` の1か所で可能)
 - **記事の書式**: MDX で進める
-- **その他**: アクセス解析(Vercel Analytics など)・コメント・タグ別一覧は初期リリースでは作らない
+- **その他**: アクセス解析(Cloudflare Web Analytics / GA など)・コメント・タグ別一覧は初期リリースでは作らない
+
+---
+
+## 9. リポジトリ分離(記事データ / ブログシステム)
+
+2026-10-08 決定。yucchiy/blogv4(システム)+ yucchiy/blog.yucchiy.com(記事)とほぼ同じ形で、**公開(GitHub Pages)は記事リポジトリ側の Actions が担う**。記事の push で即デプロイさせるため。
+
+```
+5unad0ke1/logs-site     ← ブログシステム(public)。.github/workflows/ci.yml
+└─ content/             ← .gitignore。logs-content の clone
+5unad0ke1/logs-content  ← 記事データ(public)。GitHub Pages の公開元
+├─ posts/<slug>/index.mdx + 画像
+├─ .cache/ogp.json      ← リンクカードの OGP キャッシュ
+└─ .github/workflows/deploy.yml
+```
+
+- **logs-content の deploy.yml**: 起点は「記事の push」「logs-site からの `repository_dispatch`(`system-updated`)」「手動」。logs-site の `main` を `system/` に、自分自身を `system/content/` に checkout してビルドし、`actions/deploy-pages` で公開する(yucchiy 方式と違い、コピー用スクリプトは不要)
+- **logs-site の ci.yml**: PR と push で format / check / build を確認。`main` への push では、ビルド成功後に logs-content へ `repository_dispatch` を送り、システムの変更もすぐ本番に反映する
+  - 送信には logs-content の **Contents: Read and write** を持つ Fine-grained PAT が必要。logs-site の Secrets に `CONTENT_DISPATCH_TOKEN` として登録する(未設定なら警告だけ出してスキップ)
+- **ローカル開発**: `npm run dev` / `build` / `check` の前に `scripts/fetch-content.mjs` が走り、`content/` が無ければ logs-content を clone する。記事は `content/` の中で書いてコミット・push する
+- **注意**: デプロイは logs-site の `main` を使う。開発中の `develop` の内容は `main` にマージするまで本番に出ない
+- **記事とシステムの約束事**: frontmatter スキーマと MDX コンポーネント(Figure / LinkCard / Video / Note)。logs-content の README にまとめた
+
+### 公開までの手作業
+
+1. GitHub に `5unad0ke1/logs-content`(public)を作り、ローカルの `content/` を push
+2. logs-content の Settings → Pages → Source を **GitHub Actions** にする
+3. 同じく Pages → Custom domain に `logs.sunadokei.dev` を設定し、DNS に `logs` → `5unad0ke1.github.io` の CNAME を追加。反映後 Enforce HTTPS を有効化
+4. logs-site の `develop` を `main` にマージ
+5. (任意)Fine-grained PAT を作り、logs-site の Secrets に `CONTENT_DISPATCH_TOKEN` を登録

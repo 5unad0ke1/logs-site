@@ -1,0 +1,54 @@
+name: CI
+
+# ビルドが通るかの確認。main への push 時は、公開を担う記事リポジトリ(logs-content)の
+# デプロイも起動して、システムの変更をすぐ本番に反映する。
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      # 記事は公開リポジトリなので、そのまま content/ に clone できる
+      - name: Checkout content (logs-content)
+        uses: actions/checkout@v7
+        with:
+          repository: 5unad0ke1/logs-content
+          path: content
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run check
+      - run: npm run build
+
+  trigger-deploy:
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch deploy to logs-content
+        env:
+          # logs-content の Contents: Read and write を持つ Fine-grained PAT
+          GH_TOKEN: ${{ secrets.CONTENT_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning::CONTENT_DISPATCH_TOKEN が未設定のため、デプロイは起動しません"
+            exit 0
+          fi
+          gh api repos/5unad0ke1/logs-content/dispatches \
+            -f event_type=system-updated \
+            -f "client_payload[sha]=${{ github.sha }}"

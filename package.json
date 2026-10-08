@@ -7,12 +7,16 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "predev": "node scripts/fetch-content.mjs",
     "build": "astro build",
+    "prebuild": "node scripts/fetch-content.mjs",
     "preview": "astro preview",
-    "astro": "astro",
     "check": "astro check",
+    "precheck": "node scripts/fetch-content.mjs",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "content:fetch": "node scripts/fetch-content.mjs",
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.4.3",

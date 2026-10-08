@@ -33,8 +33,9 @@ const ogImage = cover
   type="article"
   publishedTime={date}
   modifiedTime={updated}
-  width="article"
 >
+  <Toc slot="sidebar" headings={headings} />
+
   <div class="post">
     <article class="article">
       <header class="head">
@@ -71,10 +72,6 @@ const ogImage = cover
 
       <PrevNext prev={prev} next={next} />
     </article>
-
-    <div class="toc-col">
-      <Toc headings={headings} />
-    </div>
   </div>
 </BaseLayout>
 
@@ -103,10 +100,6 @@ const ogImage = cover
 
 <style>
   .post {
-    display: grid;
-    grid-template-columns: minmax(0, 720px) minmax(200px, 1fr);
-    align-items: start;
-    gap: 56px;
     padding: 48px 0 80px;
   }
   .article {
@@ -114,10 +107,6 @@ const ogImage = cover
     display: flex;
     flex-direction: column;
     gap: 28px;
-  }
-  .toc-col {
-    position: sticky;
-    top: 0;
   }
   .head {
     display: flex;
@@ -164,15 +153,6 @@ const ogImage = cover
     display: flex;
     align-items: center;
     gap: 6px;
-  }
-
-  @media (max-width: 1100px) {
-    .post {
-      grid-template-columns: minmax(0, 720px);
-    }
-    .toc-col {
-      display: none;
-    }
   }
 
   @media (max-width: 760px) {

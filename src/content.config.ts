@@ -5,7 +5,8 @@ import { z } from 'astro/zod';
 const posts = defineCollection({
   loader: glob({
     pattern: '**/index.{md,mdx}',
-    base: './src/content/posts',
+    // 記事は別リポジトリ(logs-content)。content/ に clone して読み込む
+    base: './content/posts',
     // camera-shake/index.mdx → camera-shake
     generateId: ({ entry }) => entry.replace(/\/index\.mdx?$/, ''),
   }),

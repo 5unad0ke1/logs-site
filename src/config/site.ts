@@ -25,6 +25,8 @@ export const nav: NavItem[] = [
   { key: 'log', label: 'log', href: '/' },
   { key: 'about', label: 'about', href: '/log/about/' },
   { key: 'links', label: 'links', href: site.social.links, external: true },
+  { key: 'github', label: 'github', href: site.social.github, external: true },
+  { key: 'x', label: 'x', href: site.social.x, external: true },
   { key: 'rss', label: 'rss', href: '/rss.xml' },
 ];
 
