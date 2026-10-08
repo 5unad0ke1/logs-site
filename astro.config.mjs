@@ -22,7 +22,12 @@ export default defineConfig({
       mdastPlugins: [postMeta(), figureNumber(), lineBreaks()],
     }),
     shikiConfig: {
-      theme: 'material-theme-darker',
+      // ライト / ダークの両方の色を CSS 変数で出し、prose.css で切り替える
+      themes: {
+        light: 'github-light-default',
+        dark: 'github-dark-default',
+      },
+      defaultColor: false,
       transformers: [codeFrame()],
     },
   },

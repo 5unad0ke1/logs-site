@@ -1,0 +1,24 @@
+---
+import { themeSchedule } from '../config/site';
+import { THEME_STORAGE_KEY } from '../lib/theme';
+
+const { lightFrom, darkFrom } = themeSchedule;
+---
+
+<!--
+  最初の描画より前にテーマを決めて、ダーク→ライトのちらつきを防ぐ。
+  そのため <head> に直接埋め込む(判定は src/lib/theme.ts と同じ)
+-->
+<script is:inline define:vars={{ key: THEME_STORAGE_KEY, lightFrom, darkFrom }}>
+  let mode = 'auto';
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved === 'light' || saved === 'dark') mode = saved;
+  } catch {
+    // ストレージが使えない環境では自動のまま
+  }
+  const hour = new Date().getHours();
+  const auto = hour >= lightFrom && hour < darkFrom ? 'light' : 'dark';
+  document.documentElement.dataset.theme = mode === 'auto' ? auto : mode;
+  document.documentElement.dataset.themeMode = mode;
+</script>

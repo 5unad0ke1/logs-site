@@ -1,0 +1,172 @@
+---
+import { themeSchedule } from '../config/site';
+import type { ThemeMode } from '../lib/theme';
+
+interface Props {
+  /** side: PC サイドバー / menu: スマホの全画面メニュー */
+  variant: 'side' | 'menu';
+}
+
+const { variant } = Astro.props;
+const { lightFrom, darkFrom } = themeSchedule;
+
+const options: { mode: ThemeMode; label: string; title: string }[] = [
+  { mode: 'light', label: 'light', title: 'ライト' },
+  { mode: 'dark', label: 'dark', title: 'ダーク' },
+  {
+    mode: 'auto',
+    label: 'auto',
+    title: `自動(${lightFrom}:00〜${darkFrom}:00 はライト、それ以外はダーク)`,
+  },
+];
+---
+
+<div class:list={['theme', variant]} role="group" aria-label="テーマ">
+  <span class="label" aria-hidden="true">
+    theme
+  </span>
+  <div class="options">
+    {options.map((option) => (
+      <button
+        type="button"
+        class="option"
+        data-theme-option={option.mode}
+        aria-pressed="false"
+        title={option.title}
+      >
+        {option.label}
+      </button>
+    ))}
+  </div>
+</div>
+
+<script>
+  import {
+    THEME_STORAGE_KEY,
+    isThemeMode,
+    msUntilNextSwitch,
+    resolveTheme,
+    type ThemeMode,
+  } from '../lib/theme';
+
+  const root = document.documentElement;
+  let timer: number | undefined;
+
+  const currentMode = (): ThemeMode => {
+    const mode = root.dataset.themeMode;
+    return isThemeMode(mode) ? mode : 'auto';
+  };
+
+  const apply = (mode: ThemeMode) => {
+    root.dataset.themeMode = mode;
+    root.dataset.theme = resolveTheme(mode);
+    for (const button of document.querySelectorAll<HTMLButtonElement>(
+      '[data-theme-option]',
+    )) {
+      button.setAttribute(
+        'aria-pressed',
+        String(button.dataset.themeOption === mode),
+      );
+    }
+    // スマホのアドレスバーなどの色も背景に合わせる
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute(
+        'content',
+        getComputedStyle(root).getPropertyValue('--c-bg').trim(),
+      );
+    // 自動モードは、開いたまま切り替え時刻をまたいでも追従する
+    clearTimeout(timer);
+    if (mode === 'auto') {
+      timer = window.setTimeout(
+        () => apply('auto'),
+        msUntilNextSwitch() + 1000,
+      );
+    }
+  };
+
+  document.addEventListener('click', (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>(
+      '[data-theme-option]',
+    );
+    const mode = button?.dataset.themeOption;
+    if (!isThemeMode(mode)) return;
+    try {
+      if (mode === 'auto') localStorage.removeItem(THEME_STORAGE_KEY);
+      else localStorage.setItem(THEME_STORAGE_KEY, mode);
+    } catch {
+      // 保存できなくても、このページでは切り替える
+    }
+    apply(mode);
+  });
+
+  // 裏に回っている間はタイマーが遅れるので、戻ってきたら判定し直す
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) apply(currentMode());
+  });
+
+  // 別タブで切り替えたら合わせる
+  addEventListener('storage', (event) => {
+    if (event.key !== THEME_STORAGE_KEY) return;
+    apply(isThemeMode(event.newValue) ? event.newValue : 'auto');
+  });
+
+  apply(currentMode());
+</script>
+
+<style>
+  .theme {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: var(--font-mono);
+  }
+  .label {
+    color: var(--c-text-muted);
+  }
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+  .option {
+    background: transparent;
+    border: 0;
+    color: var(--c-text-muted);
+    font: inherit;
+    cursor: pointer;
+  }
+  .option:hover {
+    background: var(--c-surface);
+    color: var(--c-text);
+  }
+  /* スクリプトより先に、<head> で決めたモードで選択状態を出す */
+  :global(html[data-theme-mode='light']) .option[data-theme-option='light'],
+  :global(html[data-theme-mode='dark']) .option[data-theme-option='dark'],
+  :global(html[data-theme-mode='auto']) .option[data-theme-option='auto'] {
+    color: var(--c-accent);
+    background: var(--c-surface);
+  }
+
+  .side {
+    font-size: 13px;
+  }
+  .side .label {
+    padding-left: 12px;
+  }
+  .side .option {
+    padding: 10px 12px;
+  }
+
+  .menu {
+    font-size: 15px;
+  }
+  /* ボタンの余白の分だけ左に出して、文字の左端をラベルとそろえる */
+  .menu .options {
+    margin-left: -12px;
+  }
+  .menu .option {
+    min-height: 44px;
+    padding: 0 12px;
+  }
+</style>

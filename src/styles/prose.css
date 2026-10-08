@@ -165,6 +165,21 @@
   font-family: inherit;
 }
 
+/* Shiki の2テーマ(astro.config.mjs の shikiConfig.themes)をテーマに合わせて使い分ける */
+.code-frame pre,
+.code-frame pre span {
+  color: var(--shiki-dark);
+  font-style: var(--shiki-dark-font-style);
+  font-weight: var(--shiki-dark-font-weight);
+}
+
+:root[data-theme='light'] .code-frame pre,
+:root[data-theme='light'] .code-frame pre span {
+  color: var(--shiki-light);
+  font-style: var(--shiki-light-font-style);
+  font-weight: var(--shiki-light-font-weight);
+}
+
 @media (max-width: 760px) {
   .prose {
     font-size: 16px;

@@ -18,7 +18,6 @@ export const site = {
   alias: '5unad0ke1',
   bio: '静かにゲームを作っていたりします。\n神出鬼没なので何処かで会うかもしれませんね。',
   copyright: 'sunadokei',
-  accent: '#FF772D',
   social: {
     x: 'https://x.com/5unad0ke1',
     xHandle: '@5unad0ke1',
@@ -26,6 +25,12 @@ export const site = {
     links: 'https://links.sunadokei.dev',
   },
 } as const;
+
+/**
+ * テーマの自動モードの切り替え時刻(閲覧者の端末の時刻)。
+ * lightFrom 時〜darkFrom 時の手前まではライト、それ以外はダーク
+ */
+export const themeSchedule = { lightFrom: 6, darkFrom: 18 } as const;
 
 /** フッター・メニューに出す © 表記(ビルドした年) */
 export const copyrightText = `© ${new Date().getFullYear()} ${site.copyright}`;
