@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 import { postMeta } from './src/plugins/post-meta';
 import { figureNumber } from './src/plugins/figure-number';
+import { lineBreaks } from './src/plugins/line-breaks';
 import { codeFrame } from './src/plugins/code-frame';
 import { site } from './src/config/site';
 
@@ -17,7 +18,8 @@ export default defineConfig({
   },
   markdown: {
     processor: satteri({
-      mdastPlugins: [postMeta(), figureNumber()],
+      // postMeta は改行を <br> にする前の本文で読了時間・抜粋を作るので先に置く
+      mdastPlugins: [postMeta(), figureNumber(), lineBreaks()],
     }),
     shikiConfig: {
       theme: 'material-theme-darker',
