@@ -1,6 +1,6 @@
 ---
 import { formatDate } from '../lib/format';
-import { postUrl, type Post } from '../lib/posts';
+import { isExternal, postUrl, sourceLabel, type Post } from '../lib/posts';
 import HourglassIcon from './HourglassIcon.astro';
 
 interface Props {
@@ -11,21 +11,50 @@ const { posts } = Astro.props;
 ---
 
 <section class="list" aria-label="記事一覧">
-  {posts.map((post) => (
-    <a class="row" href={postUrl(post)}>
-      <span class="title">
-        <HourglassIcon class="icon" />
-        {post.data.title}
-        {post.data.draft && <span class="draft">[draft]</span>}
-      </span>
-      <span class="meta">
-        <time datetime={post.data.date.toISOString()}>
-          {formatDate(post.data.date)}
-        </time>{' '}
-        • log
-      </span>
-    </a>
-  ))}
+  {posts.map((post) => {
+    const external = isExternal(post);
+    return (
+      <a
+        class="row"
+        href={postUrl(post)}
+        target={external ? '_blank' : undefined}
+        rel={external ? 'noopener' : undefined}
+      >
+        <span class="title">
+          {external ? (
+            <svg
+              class="icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--c-text-muted)"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 17L17 7" />
+              <path d="M8 7h9v9" />
+            </svg>
+          ) : (
+            <HourglassIcon class="icon" />
+          )}
+          <span>
+            {post.data.title}
+            {external && <span class="ext"> ↗</span>}
+          </span>
+          {post.data.draft && <span class="draft">[draft]</span>}
+        </span>
+        <span class="meta">
+          <time datetime={post.data.date.toISOString()}>
+            {formatDate(post.data.date)}
+          </time>{' '}
+          • {sourceLabel(post)}
+        </span>
+      </a>
+    );
+  })}
 </section>
 
 <style>
@@ -59,6 +88,10 @@ const { posts } = Astro.props;
     flex: none;
     /* 1行目の中央に揃える */
     margin-top: calc((1.6em - 16px) / 2);
+  }
+  .ext {
+    font-family: var(--font-mono);
+    color: var(--c-text-muted);
   }
   .draft {
     font-family: var(--font-mono);
