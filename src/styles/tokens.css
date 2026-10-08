@@ -1,13 +1,18 @@
+/*
+ * ニュートラル色は、背景 #111113(HSV で S10 前後)を基準にした、ごく弱い青みのグレー。
+ * 元デザインの明るさ(OKLCH の L)を保ったまま、色相を青側にそろえ、彩度を同じ割合で下げている。
+ * オレンジのアクセントと補色の関係にして、暖色に寄りすぎないようにしている。
+ */
 :root {
-  --c-bg: #100f0d;
-  --c-surface: #1a1815;
-  --c-code-bg: #161411;
-  --c-border: #2c2924;
-  --c-border-hover: #6b655b;
-  --c-border-dashed: #4a453d;
-  --c-text: #ece7de;
-  --c-text-body: #d9d3c8;
-  --c-text-muted: #a39c90;
+  --c-bg: #111113;
+  --c-surface: #18181a;
+  --c-code-bg: #141416;
+  --c-border: #29292c;
+  --c-border-hover: #65666a;
+  --c-border-dashed: #444649;
+  --c-text: #e7e7e9;
+  --c-text-body: #d3d4d5;
+  --c-text-muted: #9b9da0;
   --c-text-hover: #ffffff;
   --c-accent: #ff772d;
 
