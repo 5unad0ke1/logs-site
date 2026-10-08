@@ -1,0 +1,24 @@
+:root {
+  --c-bg: #100f0d;
+  --c-surface: #1a1815;
+  --c-code-bg: #161411;
+  --c-border: #2c2924;
+  --c-border-hover: #6b655b;
+  --c-border-dashed: #4a453d;
+  --c-text: #ece7de;
+  --c-text-body: #d9d3c8;
+  --c-text-muted: #a39c90;
+  --c-text-hover: #ffffff;
+  --c-accent: #ff772d;
+
+  --font-sans: 'Zen Kaku Gothic New', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --gutter: 24px;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --gutter: 20px;
+  }
+}

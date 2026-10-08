@@ -1,0 +1,52 @@
+---
+import Logo from './Logo.astro';
+---
+
+<div class="mbar">
+  <Logo href="/" size="sm" />
+  <button
+    type="button"
+    class="menu-button"
+    aria-label="メニューを開く"
+    aria-expanded="false"
+    aria-controls="mobile-menu"
+    data-menu-open
+  >
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      aria-hidden="true"
+    >
+      <path d="M4 7h16"></path>
+      <path d="M4 12h16"></path>
+      <path d="M4 17h16"></path>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .mbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .menu-button {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--c-border);
+    color: var(--c-text);
+    cursor: pointer;
+  }
+</style>

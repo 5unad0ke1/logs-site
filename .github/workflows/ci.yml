@@ -1,0 +1,35 @@
+name: CI
+
+# プルリクエストでビルドが通るかを確認する(公開はしない)。
+# 公開は記事リポジトリ(logs-content)の Deploy が担う。システムの変更は、
+# 次に記事を push したときか、logs-content の Deploy を手動実行したときに反映される。
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      # 記事は公開リポジトリなので、そのまま content/ に clone できる
+      - name: Checkout content (logs-content)
+        uses: actions/checkout@v7
+        with:
+          repository: 5unad0ke1/logs-content
+          path: content
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run check
+      - run: npm run build

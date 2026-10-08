@@ -1,0 +1,41 @@
+---
+import { site } from '../config/site';
+import HourglassIcon from './HourglassIcon.astro';
+
+interface Props {
+  size?: 'sm' | 'md';
+  href?: string;
+}
+
+const { size = 'md', href } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag class:list={['logo', size]} href={href}>
+  <HourglassIcon size={size === 'md' ? 22 : 20} />
+  <span>
+    {site.author}
+    <span class="accent">{site.titleSuffix}</span>
+  </span>
+</Tag>
+
+<style>
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--c-text);
+  }
+  .md {
+    font-size: 18px;
+  }
+  .sm {
+    font-size: 17px;
+  }
+  .accent {
+    color: var(--c-accent);
+  }
+</style>

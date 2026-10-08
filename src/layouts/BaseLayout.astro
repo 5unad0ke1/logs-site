@@ -1,0 +1,154 @@
+---
+import '@fontsource/zen-kaku-gothic-new/400.css';
+import '@fontsource/zen-kaku-gothic-new/500.css';
+import '@fontsource/zen-kaku-gothic-new/700.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
+import '@fontsource/jetbrains-mono/700.css';
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+import { currentNavKey, site } from '../config/site';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import MobileMenu from '../components/MobileMenu.astro';
+import SideNav from '../components/SideNav.astro';
+
+interface Props {
+  /** ページ固有のタイトル。省略時はサイト名のみ */
+  title?: string;
+  description?: string;
+  /** OGP 画像の URL(絶対 or ルート相対) */
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  modifiedTime?: Date;
+}
+
+const {
+  title,
+  description = site.description,
+  image,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+} = Astro.props;
+
+const fullTitle = title ? `${title} | ${site.title}` : site.title;
+const siteUrl = Astro.site ?? site.url;
+const canonical = new URL(Astro.url.pathname, siteUrl);
+const imageUrl = image ? new URL(image, siteUrl).href : undefined;
+const current = currentNavKey(Astro.url.pathname);
+---
+
+<!doctype html>
+<html lang="ja" style={`--c-accent: ${site.accent}`}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={site.title}
+      href="/rss.xml"
+    />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#100F0D" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={site.title} />
+    <meta property="og:title" content={title ?? site.title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="ja_JP" />
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+    {publishedTime && (
+      <meta
+        property="article:published_time"
+        content={publishedTime.toISOString()}
+      />
+    )}
+    {modifiedTime && (
+      <meta
+        property="article:modified_time"
+        content={modifiedTime.toISOString()}
+      />
+    )}
+    <meta
+      name="twitter:card"
+      content={imageUrl ? 'summary_large_image' : 'summary'}
+    />
+    <meta name="twitter:site" content={site.social.xHandle} />
+  </head>
+  <body>
+    <div class="shell">
+      <div class="mobile-only">
+        <MobileBar />
+      </div>
+      <div class="desktop-only">
+        <SideNav current={current}>
+          <!-- 記事ページの目次など、ナビの下に置くもの -->
+          <slot name="sidebar" />
+        </SideNav>
+      </div>
+      <main>
+        <slot />
+        <Footer />
+      </main>
+    </div>
+    <MobileMenu current={current} />
+  </body>
+</html>
+
+<style>
+  .shell {
+    /* ページが短くてもフッターが画面下端に来るよう、高さいっぱいに伸ばす */
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) minmax(0, 820px);
+    column-gap: 64px;
+  }
+  .desktop-only {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    /* 目次が長くなってもサイドバー内でスクロールできるように */
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .mobile-only {
+    display: none;
+  }
+  main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  main > :global(footer) {
+    margin-top: auto;
+  }
+
+  @media (max-width: 760px) {
+    .shell {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+    }
+    .desktop-only {
+      display: none;
+    }
+    .mobile-only {
+      display: block;
+    }
+  }
+</style>
