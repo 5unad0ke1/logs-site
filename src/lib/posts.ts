@@ -2,13 +2,6 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type Post = CollectionEntry<'posts'>;
 
-/** 外部サービスの出典名。ここに無いドメインはホスト名をそのまま出す */
-const SOURCES: Record<string, string> = {
-  'zenn.dev': 'zenn',
-  'qiita.com': 'qiita',
-  'note.com': 'note',
-};
-
 /** 公開記事を新しい順に(外部記事を含む)。draft は dev でのみ含める */
 export async function getPosts(): Promise<Post[]> {
   const posts = await getCollection(
@@ -44,9 +37,12 @@ export function postUrl(post: Post): string {
   return post.data.externalUrl ?? `/log/${post.id}/`;
 }
 
-/** 一覧の「• log」「• zenn」の部分 */
+/**
+ * 一覧の「• log」「• zenn」の部分。外部記事はホスト名の先頭から作る
+ * (zenn.dev → zenn、www.docswell.com → docswell、speakerdeck.com → speakerdeck)
+ */
 export function sourceLabel(post: Post): string {
   if (!post.data.externalUrl) return 'log';
   const host = new URL(post.data.externalUrl).hostname.replace(/^www\./, '');
-  return SOURCES[host] ?? host;
+  return host.split('.')[0] ?? host;
 }
