@@ -2,6 +2,7 @@
 import { copyrightText } from '../config/site';
 import Logo from './Logo.astro';
 import NavLinks from './NavLinks.astro';
+import ThemeSwitch from './ThemeSwitch.astro';
 
 interface Props {
   current?: string;
@@ -36,6 +37,7 @@ const { current } = Astro.props;
   </div>
   <NavLinks current={current} variant="menu" />
   <div class="foot">
+    <ThemeSwitch variant="menu" />
     <span>{copyrightText}</span>
   </div>
 </dialog>
@@ -109,9 +111,9 @@ const { current } = Astro.props;
     margin-top: auto;
     padding-top: 40px;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
     font-family: var(--font-mono);
     font-size: 13px;
     color: var(--c-text-muted);

@@ -1,6 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import NavLinks from './NavLinks.astro';
+import ThemeSwitch from './ThemeSwitch.astro';
 
 interface Props {
   current?: string;
@@ -12,6 +13,7 @@ const { current } = Astro.props;
 <aside class="side">
   <Logo href="/" />
   <NavLinks current={current} variant="side" />
+  <ThemeSwitch variant="side" />
   <slot />
 </aside>
 

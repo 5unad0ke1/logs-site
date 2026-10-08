@@ -9,10 +9,12 @@ import '../styles/tokens.css';
 import '../styles/global.css';
 
 import { currentNavKey, site } from '../config/site';
+import { THEME_BG } from '../lib/theme';
 import Footer from '../components/Footer.astro';
 import MobileBar from '../components/MobileBar.astro';
 import MobileMenu from '../components/MobileMenu.astro';
 import SideNav from '../components/SideNav.astro';
+import ThemeScript from '../components/ThemeScript.astro';
 
 interface Props {
   /** ページ固有のタイトル。省略時はサイト名のみ */
@@ -42,7 +44,7 @@ const current = currentNavKey(Astro.url.pathname);
 ---
 
 <!doctype html>
-<html lang="ja" style={`--c-accent: ${site.accent}`}>
+<html lang="ja">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -58,7 +60,8 @@ const current = currentNavKey(Astro.url.pathname);
       href="/rss.xml"
     />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <meta name="theme-color" content="#100F0D" />
+    <meta name="theme-color" content={THEME_BG.dark} />
+    <ThemeScript />
 
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content={site.title} />
