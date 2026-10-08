@@ -365,9 +365,9 @@ export const site = {
 └─ .github/workflows/deploy.yml
 ```
 
-- **logs-content の deploy.yml**: 起点は「記事の push」「logs-site からの `repository_dispatch`(`system-updated`)」「手動」。logs-site の `main` を `system/` に、自分自身を `system/content/` に checkout してビルドし、`actions/deploy-pages` で公開する(yucchiy 方式と違い、コピー用スクリプトは不要)
-- **logs-site の ci.yml**: PR と push で format / check / build を確認。`main` への push では、ビルド成功後に logs-content へ `repository_dispatch` を送り、システムの変更もすぐ本番に反映する
-  - 送信には logs-content の **Contents: Read and write** を持つ Fine-grained PAT が必要。logs-site の Secrets に `CONTENT_DISPATCH_TOKEN` として登録する(未設定なら警告だけ出してスキップ)
+- **logs-content の deploy.yml(公開はここだけ)**: 起点は「記事の push」と「手動実行」。logs-site の `main` を `system/` に、自分自身を `system/content/` に checkout してビルドし、`actions/deploy-pages` で公開する(yucchiy 方式と違い、コピー用スクリプトは不要)
+- **logs-site の ci.yml**: プルリクエストで format / check / build を確認するだけ。公開には関与しない
+  - 2026-10-08 決定: 当初は logs-site の `main` への push で logs-content に `repository_dispatch` を送っていたが、リポジトリ間の依存が双方向になり、ビルドも二重になるため廃止。**システムだけ更新したときは logs-content の Deploy を手動実行する**
 - **ローカル開発**: `npm run dev` / `build` / `check` の前に `scripts/fetch-content.mjs` が走り、`content/` が無ければ logs-content を clone する。記事は `content/` の中で書いてコミット・push する
 - **注意**: デプロイは logs-site の `main` を使う。開発中の `develop` の内容は `main` にマージするまで本番に出ない
 - **記事とシステムの約束事**: frontmatter スキーマと MDX コンポーネント(Figure / LinkCard / Video / Note)。logs-content の README にまとめた
@@ -378,4 +378,3 @@ export const site = {
 2. logs-content の Settings → Pages → Source を **GitHub Actions** にする
 3. 同じく Pages → Custom domain に `logs.sunadokei.dev` を設定し、DNS に `logs` → `5unad0ke1.github.io` の CNAME を追加。反映後 Enforce HTTPS を有効化
 4. logs-site の `develop` を `main` にマージ
-5. (任意)Fine-grained PAT を作り、logs-site の Secrets に `CONTENT_DISPATCH_TOKEN` を登録

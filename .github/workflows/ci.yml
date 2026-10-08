@@ -1,11 +1,10 @@
 name: CI
 
-# ビルドが通るかの確認。main への push 時は、公開を担う記事リポジトリ(logs-content)の
-# デプロイも起動して、システムの変更をすぐ本番に反映する。
+# プルリクエストでビルドが通るかを確認する(公開はしない)。
+# 公開は記事リポジトリ(logs-content)の Deploy が担う。システムの変更は、
+# 次に記事を push したときか、logs-content の Deploy を手動実行したときに反映される。
 on:
   pull_request:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -34,21 +33,3 @@ jobs:
       - run: npm run format:check
       - run: npm run check
       - run: npm run build
-
-  trigger-deploy:
-    needs: build
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dispatch deploy to logs-content
-        env:
-          # logs-content の Contents: Read and write を持つ Fine-grained PAT
-          GH_TOKEN: ${{ secrets.CONTENT_DISPATCH_TOKEN }}
-        run: |
-          if [ -z "$GH_TOKEN" ]; then
-            echo "::warning::CONTENT_DISPATCH_TOKEN が未設定のため、デプロイは起動しません"
-            exit 0
-          fi
-          gh api repos/5unad0ke1/logs-content/dispatches \
-            -f event_type=system-updated \
-            -f "client_payload[sha]=${{ github.sha }}"
