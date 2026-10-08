@@ -5,10 +5,11 @@ import Figure from '../../components/mdx/Figure.astro';
 import LinkCard from '../../components/mdx/LinkCard.astro';
 import Note from '../../components/mdx/Note.astro';
 import Video from '../../components/mdx/Video.astro';
-import { getAdjacent, getPosts } from '../../lib/posts';
+import { getAdjacent, getPosts, localPosts } from '../../lib/posts';
 
 export async function getStaticPaths() {
-  const posts = await getPosts();
+  // 外部記事(externalUrl)はページを作らず、前後記事の対象にもしない
+  const posts = localPosts(await getPosts());
   return posts.map((post) => ({
     params: { slug: post.id },
     props: { post, ...getAdjacent(posts, post.id) },

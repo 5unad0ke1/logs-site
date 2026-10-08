@@ -14,9 +14,12 @@ export async function GET(context: APIContext) {
       posts.map(async (post) => ({
         title: post.data.title,
         pubDate: post.data.date,
+        // 本文の無い外部記事は抜粋が空になるので、その場合は出さない
         description:
-          post.data.description ??
-          (await render(post)).remarkPluginFrontmatter.excerpt,
+          (post.data.description ??
+            (await render(post)).remarkPluginFrontmatter.excerpt) ||
+          undefined,
+        // 外部記事は Zenn などの URL をそのまま
         link: postUrl(post),
         categories: post.data.tags,
       })),

@@ -2,7 +2,14 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type Post = CollectionEntry<'posts'>;
 
-/** 公開記事を新しい順に。draft は dev でのみ含める */
+/** 外部サービスの出典名。ここに無いドメインはホスト名をそのまま出す */
+const SOURCES: Record<string, string> = {
+  'zenn.dev': 'zenn',
+  'qiita.com': 'qiita',
+  'note.com': 'note',
+};
+
+/** 公開記事を新しい順に(外部記事を含む)。draft は dev でのみ含める */
 export async function getPosts(): Promise<Post[]> {
   const posts = await getCollection(
     'posts',
@@ -12,6 +19,16 @@ export async function getPosts(): Promise<Post[]> {
     (a, b) =>
       b.data.date.getTime() - a.data.date.getTime() || a.id.localeCompare(b.id),
   );
+}
+
+/** Zenn など外部に置いた記事か(サイト内にページを作らない) */
+export function isExternal(post: Post): boolean {
+  return post.data.externalUrl !== undefined;
+}
+
+/** サイト内にページを持つ記事だけ(記事ページ・前後記事用) */
+export function localPosts(posts: Post[]): Post[] {
+  return posts.filter((post) => !isExternal(post));
 }
 
 /** prev = 1つ古い記事、next = 1つ新しい記事 */
@@ -24,5 +41,12 @@ export function getAdjacent(posts: Post[], id: string) {
 }
 
 export function postUrl(post: Post): string {
-  return `/log/${post.id}/`;
+  return post.data.externalUrl ?? `/log/${post.id}/`;
+}
+
+/** 一覧の「• log」「• zenn」の部分 */
+export function sourceLabel(post: Post): string {
+  if (!post.data.externalUrl) return 'log';
+  const host = new URL(post.data.externalUrl).hostname.replace(/^www\./, '');
+  return SOURCES[host] ?? host;
 }
