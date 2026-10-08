@@ -6,6 +6,15 @@ export type Theme = 'light' | 'dark';
 
 export const THEME_STORAGE_KEY = 'theme';
 
+/**
+ * <meta name="theme-color">(スマホのアドレスバーなど)に使う背景色。
+ * CSS が読み込まれる前に使うので、src/styles/tokens.css の --c-bg と同じ値をここにも持つ
+ */
+export const THEME_BG: Record<Theme, string> = {
+  light: '#FAFAFB',
+  dark: '#111113',
+};
+
 export function isThemeMode(value: unknown): value is ThemeMode {
   return value === 'light' || value === 'dark' || value === 'auto';
 }
