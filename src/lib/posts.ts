@@ -2,7 +2,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type Post = CollectionEntry<'posts'>;
 
-/** 外部サービスの出典名。ここに無いドメインはホスト名をそのまま出す */
+/** 外部サービスの出典名。ここに無いドメインはホスト名の先頭から作る */
 const SOURCES: Record<string, string> = {
   'zenn.dev': 'zenn',
   'qiita.com': 'qiita',
@@ -44,9 +44,13 @@ export function postUrl(post: Post): string {
   return post.data.externalUrl ?? `/log/${post.id}/`;
 }
 
-/** 一覧の「• log」「• zenn」の部分 */
+/**
+ * 一覧の「• log」「• zenn」の部分。外部記事は対応表(SOURCES)を優先し、
+ * 無ければホスト名の先頭から作る(www.docswell.com → docswell)
+ */
 export function sourceLabel(post: Post): string {
   if (!post.data.externalUrl) return 'log';
   const host = new URL(post.data.externalUrl).hostname.replace(/^www\./, '');
-  return SOURCES[host] ?? host;
+  // externalUrl は http(s) に限定しているが、念のため空にはしない
+  return SOURCES[host] ?? (host.split('.')[0] || 'link');
 }
