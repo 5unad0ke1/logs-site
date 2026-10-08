@@ -1,0 +1,78 @@
+---
+import { isCurrentPage, nav } from '../config/site';
+import NavLabel from './NavLabel.astro';
+
+interface Props {
+  /** 表示上の現在地(記事ページでは log) */
+  current?: string;
+  /** side: PC サイドバー / menu: スマホの全画面メニュー */
+  variant: 'side' | 'menu';
+}
+
+const { current, variant } = Astro.props;
+---
+
+<nav aria-label="メイン" class:list={['nav', variant]}>
+  {nav.map((item) => {
+    const active = item.key === current;
+    return (
+      <a
+        class:list={['link', { active }]}
+        href={item.href}
+        aria-current={
+          isCurrentPage(item.href, Astro.url.pathname) ? 'page' : undefined
+        }
+        target={item.external ? '_blank' : undefined}
+        rel={item.external ? 'noopener' : undefined}
+      >
+        <NavLabel item={item} active={active} />
+      </a>
+    );
+  })}
+</nav>
+
+<style>
+  .nav {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-mono);
+    white-space: pre;
+  }
+  .link {
+    text-decoration: none;
+  }
+  .link.active {
+    color: var(--c-accent);
+  }
+
+  .side {
+    gap: 2px;
+    font-size: 14px;
+  }
+  .side .link {
+    padding: 12px;
+    color: var(--c-text-muted);
+  }
+  .side .link:hover {
+    background: var(--c-surface);
+    color: var(--c-text);
+  }
+  .side .link.active {
+    color: var(--c-accent);
+    background: var(--c-surface);
+  }
+
+  .menu {
+    gap: 4px;
+    padding-top: 40px;
+    font-size: 28px;
+    font-weight: 500;
+  }
+  .menu .link {
+    padding: 14px 0;
+    color: var(--c-text);
+  }
+  .menu .link.active {
+    color: var(--c-accent);
+  }
+</style>

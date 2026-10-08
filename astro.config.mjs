@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
-import { readingTime } from './src/plugins/reading-time';
+import { postMeta } from './src/plugins/post-meta';
 import { figureNumber } from './src/plugins/figure-number';
 import { codeFrame } from './src/plugins/code-frame';
 import { site } from './src/config/site';
@@ -17,7 +17,7 @@ export default defineConfig({
   },
   markdown: {
     processor: satteri({
-      mdastPlugins: [readingTime(), figureNumber()],
+      mdastPlugins: [postMeta(), figureNumber()],
     }),
     shikiConfig: {
       theme: 'material-theme-darker',

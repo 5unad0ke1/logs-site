@@ -18,7 +18,12 @@ export function figureNumber() {
       );
       if (explicit) {
         // 手で num を付けた図以降は、その番号の続きから振る
-        const n = Number(explicit.value);
+        // num="2" は文字列、num={2} は式オブジェクト({ value: '2' })になる
+        const raw =
+          typeof explicit.value === 'object' && explicit.value !== null
+            ? explicit.value.value
+            : explicit.value;
+        const n = Number(raw);
         if (Number.isFinite(n)) count = Math.max(count, n);
         return;
       }

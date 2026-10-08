@@ -7,7 +7,6 @@ import BaseLayout from './BaseLayout.astro';
 import HourglassIcon from '../components/HourglassIcon.astro';
 import PrevNext from '../components/PrevNext.astro';
 import Toc from '../components/Toc.astro';
-import { excerpt } from '../lib/excerpt';
 import { formatDate } from '../lib/format';
 import type { Post } from '../lib/posts';
 
@@ -15,11 +14,13 @@ interface Props {
   post: Post;
   headings: MarkdownHeading[];
   minutes?: number;
+  /** 本文の段落から作った抜粋(src/plugins/post-meta.ts) */
+  excerpt?: string;
   prev?: Post;
   next?: Post;
 }
 
-const { post, headings, minutes, prev, next } = Astro.props;
+const { post, headings, minutes, excerpt, prev, next } = Astro.props;
 const { title, date, updated, tags, description, cover } = post.data;
 const ogImage = cover
   ? (await getImage({ src: cover, width: 1200, format: 'png' })).src
@@ -28,7 +29,7 @@ const ogImage = cover
 
 <BaseLayout
   title={title}
-  description={description ?? excerpt(post.body)}
+  description={description ?? excerpt}
   image={ogImage}
   type="article"
   publishedTime={date}

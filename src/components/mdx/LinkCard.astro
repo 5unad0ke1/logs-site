@@ -1,5 +1,5 @@
 ---
-import { getOgp } from '../../lib/ogp';
+import { getOgp, hostOf } from '../../lib/ogp';
 
 interface Props {
   url: string;
@@ -7,7 +7,7 @@ interface Props {
 
 const { url } = Astro.props;
 const ogp = await getOgp(url);
-const host = new URL(url).hostname;
+const host = hostOf(url);
 ---
 
 <a class="linkcard" href={url} target="_blank" rel="noopener">

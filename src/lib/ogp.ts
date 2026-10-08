@@ -85,7 +85,17 @@ function decodeEntities(text: string): string {
     .replace(/&amp;/g, '&');
 }
 
-function parseOgp(html: string, url: string): Ogp {
+/** 表示用のホスト名。URL として解釈できなければそのまま返す */
+export function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
+
+/** url はキャッシュのキー、finalUrl はリダイレクト後の URL(相対パスの解決に使う) */
+function parseOgp(html: string, url: string, finalUrl: string): Ogp {
   const meta = new Map<string, string>();
   for (const [tag] of html.matchAll(/<meta\b[^>]*>/gi)) {
     const key = /(?:property|name)\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1];
@@ -104,9 +114,9 @@ function parseOgp(html: string, url: string): Ogp {
     title:
       meta.get('og:title') ??
       meta.get('twitter:title') ??
-      (titleTag ? decodeEntities(titleTag.trim()) : new URL(url).hostname),
+      (titleTag ? decodeEntities(titleTag.trim()) : hostOf(url)),
     description: meta.get('og:description') ?? meta.get('description'),
-    image: image ? new URL(image, url).href : undefined,
+    image: image ? new URL(image, finalUrl).href : undefined,
   };
 }
 
@@ -121,7 +131,11 @@ async function fetchOgp(url: string): Promise<Ogp> {
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const bytes = new Uint8Array(await res.arrayBuffer());
-  return parseOgp(decodeHtml(bytes, res.headers.get('content-type')), url);
+  return parseOgp(
+    decodeHtml(bytes, res.headers.get('content-type')),
+    url,
+    res.url || url,
+  );
 }
 
 /** URL の OGP を返す。取得に失敗したらドメイン名だけの情報を返す(キャッシュはしない) */
@@ -142,7 +156,7 @@ export async function getOgp(url: string): Promise<Ogp> {
       })
       .catch((error: unknown) => {
         console.warn(`[ogp] ${url} の取得に失敗: ${String(error)}`);
-        return { url, title: new URL(url).hostname };
+        return { url, title: hostOf(url) };
       });
     inflight.set(url, pending);
   }

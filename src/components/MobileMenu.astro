@@ -1,7 +1,7 @@
 ---
-import { copyrightText, isCurrentPage, nav } from '../config/site';
+import { copyrightText } from '../config/site';
 import Logo from './Logo.astro';
-import NavLabel from './NavLabel.astro';
+import NavLinks from './NavLinks.astro';
 
 interface Props {
   current?: string;
@@ -34,24 +34,7 @@ const { current } = Astro.props;
       </svg>
     </button>
   </div>
-  <nav aria-label="メイン">
-    {nav.map((item) => {
-      const active = item.key === current;
-      return (
-        <a
-          class:list={{ active }}
-          href={item.href}
-          aria-current={
-            isCurrentPage(item.href, Astro.url.pathname) ? 'page' : undefined
-          }
-          target={item.external ? '_blank' : undefined}
-          rel={item.external ? 'noopener' : undefined}
-        >
-          <NavLabel item={item} active={active} />
-        </a>
-      );
-    })}
-  </nav>
+  <NavLinks current={current} variant="menu" />
   <div class="foot">
     <span>{copyrightText}</span>
   </div>
@@ -121,24 +104,6 @@ const { current } = Astro.props;
     border: 1px solid var(--c-border);
     color: var(--c-text);
     cursor: pointer;
-  }
-  nav {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding-top: 40px;
-    font-family: var(--font-mono);
-    font-size: 28px;
-    font-weight: 500;
-    white-space: pre;
-  }
-  nav a {
-    padding: 14px 0;
-    text-decoration: none;
-    color: var(--c-text);
-  }
-  nav a.active {
-    color: var(--c-accent);
   }
   .foot {
     margin-top: auto;

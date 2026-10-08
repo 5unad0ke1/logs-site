@@ -49,7 +49,9 @@ const items = Astro.props.headings.filter(
       if (heading.getBoundingClientRect().top <= 120) current = heading;
     }
     // 最後まで読んだら、短い末尾セクションでも現在地にする
+    // スクロールせずに全部見えている短いページでは最初の見出しのまま
     const atBottom =
+      scrollY > 0 &&
       innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
     if (atBottom) current = headings[headings.length - 1];
     if (current) setActive(current.id);
